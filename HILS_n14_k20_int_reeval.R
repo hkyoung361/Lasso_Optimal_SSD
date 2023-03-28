@@ -1,6 +1,10 @@
-#source('/Users/hkyoung/Desktop/SIC_Paper_Code/SIC_Paper_Function_Library.R')
 
-source('~/SIC_Paper/SIC_Paper_Function_Library.R')
+
+# This script reranks the designs used in the HILS algorithm for the n=14, p=20 (scenario 2 in section 5) case but integrates over lambda
+
+root_dir = "PATH TO DIRECTORY CONTAINING CODE AND DESIGN CATALOG"
+
+source(paste0(root_dir,'/Lasso_optimal_SSD_function_library.R'))
 ### The above path should point to whatever the path is in your local files
 
 
@@ -17,7 +21,7 @@ sign_all_pos = matrix(rep(1,k_star), nrow=1, ncol=k_star, byrow=TRUE)
 
 
 # Creating a folder for the output
-output_folder = "./n14_k20_kstar5_allpos_designs_HILS"
+output_folder = "./n14_p20_k5_allpos_designs_HILS"
 
 if(file.exists(output_folder)){
   print("Output folder already exists, overwritting output")
@@ -25,22 +29,16 @@ if(file.exists(output_folder)){
 
 
 
-candidate_designs <- as.matrix(read_csv("./n14_k20_kstar5_allpos_designs_HILS_lam_opt/best_huer_Var_s_design_1.csv"))
+candidate_designs <- as.matrix(read_csv("./n14_p20_k5_allpos_designs_HILS_lam_opt/best_huer_Var_s_design_1.csv"))
 
 
 for(i in 2:50){
-  H_1 = as.matrix(read_csv(paste("./n14_k20_kstar5_allpos_designs_HILS_lam_opt/best_huer_Var_s_design_", paste(i, ".csv", sep=''), sep="")))
+  H_1 = as.matrix(read_csv(paste("./n14_p20_k5_allpos_designs_HILS_lam_opt/best_huer_Var_s_design_", paste(i, ".csv", sep=''), sep="")))
   candidate_designs= abind(candidate_designs, H_1, along =3)
 }
 
 
-# d1<-as.matrix(read_in_design("./n14_k20_kstar5_allpos_designs_HILS/d1.txt"))
-# candidate_designs<- abind(candidate_designs, d1, along=3)
-# 
-# 
-# 
-# d2<-as.matrix(read_in_design("./n14_k20_kstar5_allpos_designs_HILS/d2.txt"))
-# candidate_designs<- abind(candidate_designs, d2, along=3)
+
 
 sign_all_pos = matrix(rep(1,k_star), nrow=1, ncol=k_star, byrow=TRUE)
 
@@ -81,7 +79,7 @@ stopCluster(cl)
 end_time = Sys.time()
 print(end_time - start_time)
 
-write.csv(prob_results, file ="./n14_k20_kstar5_allpos_designs_HILS_lam_opt/HILS_eval_results_int.csv", row.names =FALSE, col.names = FALSE)
+write.csv(prob_results, file ="./n14_p20_k5_allpos_designs_HILS_lam_opt/HILS_eval_results_int.csv", row.names =FALSE, col.names = FALSE)
 
 
 print(prob_results)
@@ -103,6 +101,6 @@ HILS_opt <-  candidate_designs[,,sort(prob_results,decreasing = TRUE, index.retu
 
 
 # Save the design
-write.csv(HILS_opt, file="./n14_k20_kstar5_allpos_designs_HILS_lam_opt/HILS_opt_n14_k20_kstar5_allpos_integral.csv", row.names = F, col.names=F)
+write.csv(HILS_opt, file="./n14_p20_k5_allpos_designs_HILS_lam_opt/HILS_opt_n14_p20_k5_allpos_integral.csv", row.names = F, col.names=F)
 
 

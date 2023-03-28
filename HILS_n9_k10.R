@@ -1,8 +1,9 @@
-#source('/Users/hkyoung/Desktop/SIC_Paper_Code/SIC_Paper_Function_Library.R')
+# This script runs the HILS algorithm in the n=9, p=10 (scenario 1 in section 5) case by integrating the measure over lambda
 
-source('~/SIC_Paper/SIC_Paper_Function_Library.R')
+root_dir = "PATH TO DIRECTORY CONTAINING CODE AND DESIGN CATALOG"
+
+source(paste0(root_dir,'/Lasso_optimal_SSD_function_library.R'))
 ### The above path should point to whatever the path is in your local files
-
 
 library(abind)
 library(readr)
@@ -11,21 +12,11 @@ n=9
 p=10
 k_star = 3
 
-perturb_design<-function(D_mat,num_elts){
-  n = dim(D_mat)[1]
-  p = dim(D_mat)[2]
-  
-  for (elt in c(1:num_elts)){
-    i = sample(seq(1:n), size =1)
-    j = sample(seq(1:p), size =1)
-    D_mat[i,j] = -D_mat[i,j]
-  }
-  return(D_mat)
-}
+
 
 
 # Creating a folder for the output
-output_folder = "./n9_k10_kstar3_allsigns_designs_HILS"
+output_folder = "./n9_p10_k3_allsigns_designs_HILS"
 
 if(file.exists(output_folder)){
   print("Output folder already exists, overwritting output")
@@ -72,45 +63,23 @@ best_huer <-abind(best_UES_sq, best_var_s, along = 3)
 candidate_designs = best_huer
 
 # save these designs in the output folder
-for (i in 1:50){ write.csv(best_huer[,,i], file = paste("./n9_k10_kstar3_allsigns_designs_HILS/best_huer_UES_sq_design_", paste(i, ".csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)}
+for (i in 1:50){ write.csv(best_huer[,,i], file = paste("./n9_p10_k3_allsigns_designs_HILS/best_huer_UES_sq_design_", paste(i, ".csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)}
 
-for(i in 51:100){write.csv(best_huer[,,i], file = paste("./n9_k10_kstar3_allsigns_designs_HILS/best_huer_Var_s_design_", paste(i-50, ".csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)}
-
-# for (i in 1:25){
-#   perturb_design_1 <- perturb_design(best_huer[,,i],1)
-#   candidate_designs<- abind(candidate_designs, perturb_design_1, along=3)
-#   perturb_design_2<-perturb_design(best_huer[,,i],2)
-#   candidate_designs<- abind(candidate_designs, perturb_design_2, along=3)
-#   perturb_design_3<-perturb_design(best_huer[,,i],3)
-#   candidate_designs<- abind(candidate_designs, perturb_design_3, along=3)
-#   write.csv(perturb_design_1, file = paste("./n9_k10_kstar3_allpos_designs_HILS/best_huer_UES_sq_design_", paste(i, "perturb_1.csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)
-#   write.csv(perturb_design_2, file = paste("./n9_k10_kstar3_allpos_designs_HILS/best_huer_UES_sq_design_", paste(i, "perturb_2.csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)
-#   write.csv(perturb_design_3, file = paste("./n9_k10_kstar3_allpos_designs_HILS/best_huer_UES_sq_design_", paste(i, "perturb_3.csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)
-# }
-# 
-# for (i in 26:50){
-#   perturb_design_1 <- perturb_design(best_huer[,,i],1)
-#   candidate_designs<- abind(candidate_designs, perturb_design_1, along=3)
-#   perturb_design_2<-perturb_design(best_huer[,,i],2)
-#   candidate_designs<- abind(candidate_designs, perturb_design_2, along=3)
-#   # perturb_design_3<-perturb_design(best_huer[,,i],3)
-#   # candidate_designs<- abind(candidate_designs, perturb_design_3, along=3)
-#   write.csv(perturb_design_1, file = paste("./n9_k10_kstar3_allpos_designs_HILS/best_huer_Var_s_design_", paste(i-25, "perturb_1.csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)
-#   write.csv(perturb_design_2, file = paste("./n9_k10_kstar3_allpos_designs_HILS/best_huer_Var_s_design_", paste(i-25, "perturb_2.csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)
-#   #write.csv(perturb_design_3, file = paste("./n9_k10_kstar3_allpos_designs_HILS/best_huer_Var_s_design_", paste(i, "perturb_3.csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)
-# }
+for(i in 51:100){write.csv(best_huer[,,i], file = paste("./n9_p10_k3_allsigns_designs_HILS/best_huer_Var_s_design_", paste(i-50, ".csv", sep=''), sep=""), row.names = FALSE, col.names=FALSE)}
 
 
 
 
-#Read in Rahki's design and add them to the candidate set
 
-d1<-as.matrix(read_in_design("./n9_k10_kstar3_allpos_designs_HILS/d1.txt"))
+
+#Read in PEDs and add them to the candidate set
+
+d1<-as.matrix(read_in_design(paste0(root_dir, "/Design_Catalog/n9_p10_k3_allsigns/d1.txt")))
 candidate_designs<- abind(candidate_designs, d1, along=3)
 
 
 
-d2<-as.matrix(read_in_design("./n9_k10_kstar3_allpos_designs_HILS/d2.txt"))
+d2<-as.matrix(read_in_design(paste0(root_dir, "/Design_Catalog/n9_p10_k3_allsigns/d1.txt")))
 candidate_designs<- abind(candidate_designs, d2, along=3)
 #### Get the lasso recovery measure of these  designs
 
@@ -118,15 +87,10 @@ candidate_designs<- abind(candidate_designs, d2, along=3)
 
 sign_all_pos = matrix(rep(1,k_star), nrow=1, ncol=k_star, byrow=TRUE)
 all_signs <- gen_all_sign_vects(seq(1,k_star,1))
-# balanced_sign_vect = all_signs[which(rowSums(all_signs)==0),]
-
-# submodel_samples = stack_NBIBD(p=p, k=k_star, s_1=64, num_stacks = 15)
-# 
-# A_val = submodel_samples$A_final
-# A_64 = submodel_samples$A_NBIBD
 
 # only using All positive signs here
 start_time <- Sys.time()
+#parallelizing
 cl <- makeCluster(16)
 registerDoParallel(cl)
 prob_results = foreach(start=1:dim(candidate_designs)[3], .combine = rbind, .packages =c('MASS',"mvtnorm","dplyr"),.export = ls(globalenv())) %dopar%{
@@ -155,7 +119,7 @@ print(end_time - start_time)
 
 # write the measure results for the heuristic designs to a file. 
 
-write.csv(prob_results, file ="./n9_k10_kstar3_allsigns_designs_HILS/HILS_eval_results.csv", row.names =FALSE, col.names = FALSE)
+write.csv(prob_results, file ="./n9_p10_k3_allsigns_designs_HILS/HILS_eval_results.csv", row.names =FALSE, col.names = FALSE)
 
 
 print(prob_results)
@@ -177,7 +141,7 @@ HILS_opt <-  best_huer[,,sort(prob_results,decreasing = TRUE, index.return = TRU
 
 
 # Save the design
-write.csv(HILS_opt, file="./n9_k10_kstar3_allsigns_designs_HILS/HILS_opt_n9_k10_kstar3_allsigns.csv", row.names = F, col.names=F)
+write.csv(HILS_opt, file="./n9_p10_k3_allsigns_designs_HILS/HILS_opt_n9_p10_k3_allsigns.csv", row.names = F, col.names=F)
 
 
 
